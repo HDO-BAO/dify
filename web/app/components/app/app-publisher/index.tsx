@@ -148,17 +148,19 @@ const AppPublisher = ({
   const isChatApp = [AppModeEnum.CHAT, AppModeEnum.AGENT_CHAT, AppModeEnum.COMPLETION].includes(appDetail?.mode || AppModeEnum.CHAT)
 
   const { data: userCanAccessApp, isLoading: isGettingUserCanAccessApp, refetch } = useGetUserCanAccessApp({ appId: appDetail?.id, enabled: false })
-  const { data: appAccessSubjects, isLoading: isGettingAppWhiteListSubjects } = useAppWhiteListSubjects(appDetail?.id, open && systemFeatures.webapp_auth.enabled && appDetail?.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS)
+  const { data: subjectsData } = useAppWhiteListSubjects(appDetail?.id, !!appDetail?.id && open)
+  const effectiveAccessMode = appDetail?.access_mode ?? subjectsData?.accessMode
+  const { data: appAccessSubjects, isLoading: isGettingAppWhiteListSubjects } = useAppWhiteListSubjects(appDetail?.id, open && systemFeatures.webapp_auth.enabled && effectiveAccessMode === AccessMode.SPECIFIC_GROUPS_MEMBERS)
   const openAsyncWindow = useAsyncWindowOpen()
 
   const isAppAccessSet = useMemo(() => {
     if (appDetail && appAccessSubjects) {
-      return !(appDetail.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS && appAccessSubjects.groups?.length === 0 && appAccessSubjects.members?.length === 0)
+      return !(effectiveAccessMode === AccessMode.SPECIFIC_GROUPS_MEMBERS && appAccessSubjects.groups?.length === 0 && appAccessSubjects.members?.length === 0)
     }
     return true
-  }, [appAccessSubjects, appDetail])
+  }, [appAccessSubjects, appDetail, effectiveAccessMode])
 
-  const noAccessPermission = useMemo(() => systemFeatures.webapp_auth.enabled && appDetail && appDetail.access_mode !== AccessMode.EXTERNAL_MEMBERS && !userCanAccessApp?.result, [systemFeatures, appDetail, userCanAccessApp])
+  const noAccessPermission = useMemo(() => systemFeatures.webapp_auth.enabled && appDetail && effectiveAccessMode !== AccessMode.EXTERNAL_MEMBERS && !userCanAccessApp?.result, [systemFeatures, appDetail, effectiveAccessMode, userCanAccessApp])
   const disabledFunctionButton = useMemo(() => (!publishedAt || missingStartNode || noAccessPermission), [publishedAt, missingStartNode, noAccessPermission])
 
   const disabledFunctionTooltip = useMemo(() => {
@@ -374,7 +376,7 @@ const AppPublisher = ({
                           }}
                         >
                           <div className="flex grow items-center gap-x-1.5 overflow-hidden pr-1">
-                            <AccessModeDisplay mode={appDetail?.access_mode} />
+                            <AccessModeDisplay mode={effectiveAccessMode} />
                           </div>
                           {!isAppAccessSet && <p className="shrink-0 text-text-tertiary system-xs-regular">{t('publishApp.notSet', { ns: 'app' })}</p>}
                           <div className="flex h-4 w-4 shrink-0 items-center justify-center">

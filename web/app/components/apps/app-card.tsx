@@ -36,7 +36,7 @@ import { useAsyncWindowOpen } from '@/hooks/use-async-window-open'
 import { AccessMode } from '@/models/access-control'
 import dynamic from '@/next/dynamic'
 import { useRouter } from '@/next/navigation'
-import { useGetUserCanAccessApp } from '@/service/access-control'
+import { useAppWhiteListSubjects, useGetUserCanAccessApp } from '@/service/access-control'
 import { copyApp, exportAppConfig, updateAppInfo } from '@/service/apps'
 import { fetchInstalledAppList } from '@/service/explore'
 import { useDeleteAppMutation } from '@/service/use-apps'
@@ -77,6 +77,8 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
   const { onPlanInfoChanged } = useProviderContext()
   const { push } = useRouter()
   const openAsyncWindow = useAsyncWindowOpen()
+  const { data: subjectsData } = useAppWhiteListSubjects(app.id, true)
+  const effectiveAccessMode = app.access_mode ?? subjectsData?.accessMode
 
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)
@@ -396,22 +398,22 @@ const AppCard = ({ app, onRefresh }: AppCardProps) => {
             </div>
           </div>
           <div className="flex h-5 w-5 shrink-0 items-center justify-center">
-            {app.access_mode === AccessMode.PUBLIC && (
+            {effectiveAccessMode === AccessMode.PUBLIC && (
               <Tooltip asChild={false} popupContent={t('accessItemsDescription.anyone', { ns: 'app' })}>
                 <RiGlobalLine className="h-4 w-4 text-text-quaternary" />
               </Tooltip>
             )}
-            {app.access_mode === AccessMode.SPECIFIC_GROUPS_MEMBERS && (
+            {effectiveAccessMode === AccessMode.SPECIFIC_GROUPS_MEMBERS && (
               <Tooltip asChild={false} popupContent={t('accessItemsDescription.specific', { ns: 'app' })}>
                 <RiLockLine className="h-4 w-4 text-text-quaternary" />
               </Tooltip>
             )}
-            {app.access_mode === AccessMode.ORGANIZATION && (
+            {effectiveAccessMode === AccessMode.ORGANIZATION && (
               <Tooltip asChild={false} popupContent={t('accessItemsDescription.organization', { ns: 'app' })}>
                 <RiBuildingLine className="h-4 w-4 text-text-quaternary" />
               </Tooltip>
             )}
-            {app.access_mode === AccessMode.EXTERNAL_MEMBERS && (
+            {effectiveAccessMode === AccessMode.EXTERNAL_MEMBERS && (
               <Tooltip asChild={false} popupContent={t('accessItemsDescription.external', { ns: 'app' })}>
                 <RiVerifiedBadgeLine className="h-4 w-4 text-text-quaternary" />
               </Tooltip>
