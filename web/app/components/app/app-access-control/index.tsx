@@ -7,7 +7,7 @@ import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGlobalPublicStore } from '@/context/global-public-context'
 import { AccessMode, SubjectType } from '@/models/access-control'
-import { useUpdateAccessMode } from '@/service/access-control'
+import { useAppWhiteListSubjects, useUpdateAccessMode } from '@/service/access-control'
 import useAccessControlStore from '../../../../context/access-control-store'
 import Button from '../../base/button'
 import Toast from '../../base/toast'
@@ -35,10 +35,13 @@ export default function AccessControl(props: AccessControlProps) {
       || systemFeatures.webapp_auth.allow_email_password_login
       || systemFeatures.webapp_auth.allow_email_code_login)
 
+  const { data: whiteListData } = useAppWhiteListSubjects(app.id, true)
+
   useEffect(() => {
     setAppId(app.id)
-    setCurrentMenu(app.access_mode ?? AccessMode.SPECIFIC_GROUPS_MEMBERS)
-  }, [app, setAppId, setCurrentMenu])
+    const mode = app.access_mode ?? whiteListData?.accessMode ?? AccessMode.SPECIFIC_GROUPS_MEMBERS
+    setCurrentMenu(mode)
+  }, [app, whiteListData, setAppId, setCurrentMenu])
 
   const { isPending, mutateAsync: updateAccessMode } = useUpdateAccessMode()
   const handleConfirm = useCallback(async () => {

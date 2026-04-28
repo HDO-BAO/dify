@@ -10,7 +10,7 @@ const NAME_SPACE = 'access-control'
 export const useAppWhiteListSubjects = (appId: string | undefined, enabled: boolean) => {
   return useQuery({
     queryKey: [NAME_SPACE, 'app-whitelist-subjects', appId],
-    queryFn: () => get<{ groups: AccessControlGroup[], members: AccessControlAccount[] }>(`/enterprise/webapp/app/subjects?appId=${appId}`),
+    queryFn: () => get<{ accessMode?: AccessMode, groups: AccessControlGroup[], members: AccessControlAccount[] }>(`/enterprise/webapp/app/subjects?appId=${appId}`),
     enabled: !!appId && enabled,
     staleTime: 0,
     gcTime: 0,
