@@ -26,7 +26,7 @@ jobs:
         run: |
           docker buildx build \
             -f web/Dockerfile \
-            -t opencode-web:1.0.2 \
+            -t opencode-web:1.0.3 \
             --output type=oci,dest=oci-image.tar \
             web
 
@@ -36,18 +36,18 @@ jobs:
           tar -xf oci-image.tar -C oci-extracted
           skopeo copy \
             oci:oci-extracted \
-            docker-archive:opencode-web-1.0.2.tar:opencode-web:1.0.2
-          ls -lh opencode-web-1.0.2.tar
+            docker-archive:opencode-web-1.0.3.tar:opencode-web:1.0.3
+          ls -lh opencode-web-1.0.3.tar
 
       - name: Verify format
         run: |
           echo "=== tar 첫 5줄 ==="
-          tar -tf opencode-web-1.0.2.tar | head -5
+          tar -tf opencode-web-1.0.3.tar | head -5
           echo "=== manifest.json 존재? ==="
-          tar -tf opencode-web-1.0.2.tar | grep -E "^manifest.json$" && echo "OK ✅" || echo "FAIL ❌"
+          tar -tf opencode-web-1.0.3.tar | grep -E "^manifest.json$" && echo "OK ✅" || echo "FAIL ❌"
 
       - uses: actions/upload-artifact@v4
         with:
           name: opencode-web-image
-          path: opencode-web-1.0.2.tar
+          path: opencode-web-1.0.3.tar
           retention-days: 30
