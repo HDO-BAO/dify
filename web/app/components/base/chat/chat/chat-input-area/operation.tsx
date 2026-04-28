@@ -31,7 +31,6 @@ const Operation: FC<OperationProps> = ({
   speechToTextConfig,
   onShowVoiceInput,
   onSend,
-  theme,
 }) => {
   return (
     <div
@@ -59,17 +58,14 @@ const Operation: FC<OperationProps> = ({
           }
         </div>
         <Button
-          className="ml-3 w-8 px-0"
+          className="ml-3 w-8 border-black bg-black px-0 hover:bg-black active:bg-black"
           variant="primary"
           onClick={readonly ? noop : onSend}
           data-testid="send-button"
-          style={
-            theme
-              ? {
-                  backgroundColor: theme.primaryColor,
-                }
-              : {}
-          }
+          style={{
+            backgroundColor: '#000000',
+            borderColor: '#000000',
+          }}
         >
           <RiSendPlane2Fill className="h-4 w-4" />
         </Button>

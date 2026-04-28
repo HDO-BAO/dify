@@ -186,11 +186,14 @@ const Question: FC<QuestionProps> = ({
           ref={contentRef}
           data-testid="question-content"
           className={cn(
-            'w-full px-4 py-3 text-sm',
+            'w-full px-4 py-3',
             !isEditing && 'rounded-2xl bg-background-gradient-bg-fill-chat-bubble-bg-3 text-text-primary',
             isEditing && 'rounded-[24px] border-[3px] border-components-option-card-option-selected-border bg-components-panel-bg-blur shadow-lg',
           )}
-          style={(!isEditing && theme?.chatBubbleColorStyle) ? CssTransform(theme.chatBubbleColorStyle) : {}}
+          style={{
+            fontSize: 13,
+            ...((!isEditing && theme?.chatBubbleColorStyle) ? CssTransform(theme.chatBubbleColorStyle) : {}),
+          }}
         >
           {
             !!message_files?.length && (

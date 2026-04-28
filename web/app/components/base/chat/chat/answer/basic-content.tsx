@@ -34,6 +34,7 @@ const BasicContent: FC<BasicContentProps> = ({
   return (
     <Markdown
       className={cn(
+        'text-[13px] [&_p]:text-[13px] [&_li]:text-[13px] [&_code]:text-[13px] [&_pre]:text-[13px]',
         item.isError && '!text-[#F04438]',
       )}
       content={displayContent}
